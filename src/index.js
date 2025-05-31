@@ -19,39 +19,39 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('MongoDB connected successfully');
+    console.log('✅ MongoDB connected');
   } catch (error) {
-    console.error('MongoDB connection failed:', error);
+    console.error('❌ MongoDB connection failed:', error);
     process.exit(1);
   }
 };
 
+// Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: 'process.env.CLIENT_URL' || 'http://localhost:5173',
-    // Use the environment variable CLIENT_URL or fallback to localhost
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    exposedHeaders: ['Content-Type', 'Authorization'],
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
-    // Allow credentials to be sent with requests
+    origin: process.env.CLIENT_URL,  // frontend url from env
     credentials: true,
   })
 );
 
+// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 
+// Serve frontend static files in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  const staticPath = path.join(__dirname, '../frontend/dist');
+  app.use(express.static(staticPath));
+
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'dist', 'index.html'));
+    res.sendFile(path.join(staticPath, 'index.html'));
   });
 }
- 
+
+// Start server & connect DB
 server.listen(PORT, () => {
-  console.log('Server is running on PORT:' + PORT);
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
   connectDB();
 });
