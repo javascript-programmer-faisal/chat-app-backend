@@ -40,15 +40,6 @@ app.use(
 app.use('/api/auth', authRoutes);
 app.use('/api/messages', messageRoutes);
 
-// Serve frontend static files in production
-if (process.env.NODE_ENV === 'production') {
-  const staticPath = path.join(__dirname, '../frontend/dist');
-  app.use(express.static(staticPath));
-
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(staticPath, 'index.html'));
-  });
-}
 
 // Start server & connect DB
 server.listen(PORT, () => {
